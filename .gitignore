@@ -1,0 +1,12 @@
+notas
+*.exe
+*.o
+include/*hpp.gch
+logs/*
+.vscode/*
+nohup.out
+rsa_key
+rsa_key.pub
+*.csv
+*.stackdump
+nbproject/*
