@@ -30,10 +30,7 @@ int main(int argc, char *argv[])
         Estadistica estadistica;
         
         // Código acá
-        estadistica.set_start_time();
 
-        estadistica.set_final_time();
-        //guardar en archivo los resultados
 
         #pragma omp critical
         {

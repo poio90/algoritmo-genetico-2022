@@ -32,62 +32,70 @@
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
+#include <string>
 #include "utils.hpp"
+#include <chrono>
 
 using namespace std; 
 
 class Estadistica{
 private:
     //estadistica de la población
-    static int population_size;
-    static double lower_bound;
-    static double upper_bound;
+    int population_size;
+    double lower_bound;
+    double upper_bound;
 
     //estadisticas de fitness
-    static double avg_fit;
-    static double avg_init_fit;
-    static double best_init;
-    static double best_fit;
-    static double total_fit;
-    static float _gap;
-    static float _agap;
+    double avg_fit;
+    double avg_init_fit;
+    double best_init;
+    double best_fit;
+    double total_fit;
+    float _gap;
+    float _agap;
 
     //estadisticas de iteraciones
-    static int best_i;
-    static int total_i;
-    static int pos_best_sol;
+    int best_i;
+    int total_i;
+    int pos_best_sol;
 
     //estadisticas de tiempo
-    static float best_time;
-    static clock_t start_time;
-    static clock_t final_time;
+    float best_time;//milliseconds
+    chrono::system_clock::time_point start_time;
+    chrono::system_clock::time_point final_time;
     
     //estaditicas de evaluaciones
-    static int total_eval;
-    static int best_eval;
+    int total_eval;
+    int best_eval;
+
+    string nombre_archivo;
+    
 public:
-    static void set_avg_fit();
-    static void set_avg_init_fit();
-    static void set_best_init(double);
-    static void set_total_fit(double);
-    static void increment_total_i();
-    static void get_final_time();
-    static void get_start_time();
-    static void increment_total_eval();
-    static void set_population_size(int);
-    static void set_upper_bound(double);
-    static void set_lower_bound(double);
-    static void set_best_values(Individual*, int);
-    static void gap();
-    static void agap();
-    static int get_total_i();
-    static int get_total_eval();
-    static double get_avg_fit();
-    static double get_total_fit();
-    static float get_time();
-    static void partial_sumarize();
-    static void sumarize(int);
-    static void header(int);
+
+    Estadistica();
+
+    void set_avg_fit();
+    void set_avg_init_fit();
+    void set_best_init(double);
+    void set_total_fit(double);
+    void increment_total_i();
+    void set_final_time();
+    void set_start_time();
+    void increment_total_eval();
+    void set_population_size(int);
+    void set_upper_bound(double);
+    void set_lower_bound(double);
+    void set_best_values(Individual*, int);
+    void gap();
+    void agap();
+    int get_total_i();
+    int get_total_eval();
+    double get_avg_fit();
+    double get_total_fit();
+    float get_time();
+    void partial_sumarize();
+    void sumarize(int);
+    void header(int);
     void set_nombre_archivo(string);
 };
 

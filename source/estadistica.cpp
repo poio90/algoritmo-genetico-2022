@@ -1,31 +1,31 @@
 #include "../include/estadistica.hpp"
 
-int Estadistica::population_size = 0;
-double Estadistica::lower_bound = 0.0;
-double Estadistica::upper_bound = 0.0;
 
-//estadisticas de fitness
-double Estadistica::avg_fit = 0.0;
-double Estadistica::avg_init_fit = 0.0;
-double Estadistica::best_init = __DBL_MAX__;
-double Estadistica::best_fit = __DBL_MAX__;
-double Estadistica::total_fit = 0.0;
-float Estadistica::_gap = 0.0;
-float Estadistica::_agap = 0.0;
+Estadistica::Estadistica() {
+    
+    this->population_size = 0;
+    this->lower_bound = 0.0;
+    this->upper_bound = 0.0;
 
-//estadisticas de iteraciones
-int Estadistica::best_i = 0;
-int Estadistica::total_i = 0;
-int Estadistica::pos_best_sol = 0;
+    //estadisticas de fitness
+    this->avg_fit = 0.0;
+    this->avg_init_fit = 0.0;
+    this->best_init = __DBL_MAX__;
+    this->best_fit = __DBL_MAX__;
+    this->total_fit = 0.0;
+    this->_gap = 0.0;
+    this->_agap = 0.0;
 
-//estadisticas de tiempo
-float Estadistica::best_time = 0.0;
-clock_t Estadistica::start_time = 0.0;
-clock_t Estadistica::final_time = 0.0;
+    //estadisticas de iteraciones
+    this->best_i = 0;
+    this->total_i = 0;
+    this->pos_best_sol = 0;
 
-//estaditicas de evaluaciones
-int Estadistica::total_eval = 0;
-int Estadistica::best_eval = 0;
+    //estaditicas de evaluaciones
+    this->total_eval = 0;
+    this->best_eval = 0;
+
+}
 
 void Estadistica::set_avg_fit(){
     avg_fit = total_fit / total_eval;
@@ -46,10 +46,10 @@ void Estadistica::set_total_fit(double fitness){
 }
 
 void Estadistica::set_best_values(Individual *i, int j){
-    if(i->fitness < best_fit){
+    if (i->fitness < best_fit) {
         best_fit = i->fitness;
         best_i = total_i;
-        get_final_time();
+        this->set_final_time();
         best_time = get_time();
         pos_best_sol = j;
         best_eval = total_eval;
@@ -68,12 +68,13 @@ void Estadistica::set_upper_bound(double fitness){ upper_bound = fitness; }
 
 void Estadistica::set_lower_bound(double fitness){ lower_bound = fitness; }
 
-void Estadistica::get_start_time(){ start_time = clock(); }
+void Estadistica::set_start_time(){ this->start_time = chrono::system_clock::now(); }
 
-void Estadistica::get_final_time(){ final_time = clock(); }
+void Estadistica::set_final_time(){ this->final_time = std::chrono::system_clock::now(); }
 
 float Estadistica::get_time(){
-  return (final_time - start_time) / (float) CLOCKS_PER_SEC;
+  std::chrono::duration<float,std::milli> duration = this->final_time - this->start_time;
+  return duration.count();
 }
 
 void Estadistica::gap(){ _gap = (best_fit - upper_bound) / upper_bound;}
