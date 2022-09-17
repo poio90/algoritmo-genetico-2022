@@ -29,8 +29,10 @@ private:
     int lowerBound;
     int **jobsTimes;
     Individual *best;
+    Estadistica *estadistica;
 public:
-    void load(char*);
+    Problem(Estadistica &);
+    void load(string);
     void initialize_parents(int, Population*);
     void initialize_population(int, Population*);
     void delete_population(Population*);

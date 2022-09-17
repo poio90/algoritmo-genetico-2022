@@ -1,23 +1,27 @@
 #include "../include/problem.hpp"
 
-void Problem::load(char *filename){
+Problem::Problem(Estadistica &e){
+    this->estadistica = &e;
+}
+
+void Problem::load(string filename){
     ifstream file(filename);
 
     cout << "loading instance....." << endl << endl;
     if(file.is_open()){
         cout << filename << endl;
         file >> jsize;
-        cout << "jsize: " << jsize << endl;
+        cout << "jsize: " << jsize << endl; //cantidad cromosomas = tamaño solucion = cantidad tareas
         file >> msize;
-        cout << "msize: " << msize << endl;
+        cout << "msize: " << msize << endl; //cantidad maquina
         file >> upperBound;
-        cout << "upperbound: " << upperBound << endl;
+        cout << "upperbound: " << upperBound << endl; //peor solucion encontrada hasta ahora (caso minimizacion)
         file >> lowerBound;
-        cout << "lowerbound: " << lowerBound << endl;
+        cout << "lowerbound: " << lowerBound << endl; //mejor solucion encontrada hasta ahora (caso minimizacion)
         jobsTimes= new int*[msize];
 
-        Estadistica::set_upper_bound(upperBound);
-        Estadistica::set_lower_bound(lowerBound);
+        this->estadistica->set_upper_bound(upperBound);
+        this->estadistica->set_lower_bound(lowerBound);
 
         best = (Individual*) malloc(sizeof(Individual));
         best->fitness = __DBL_MAX__;
@@ -56,7 +60,7 @@ void Problem::initialize_parents(int psize, Population *population){
         population->individual[i].solution.chromosome = (int*)malloc(sizeof(int)*jsize);
         g.random(population->individual[i].solution);
         evaluate(&population->individual[i]);
-        Estadistica::set_best_init(population->individual[i].fitness);
+        this->estadistica->set_best_init(population->individual[i].fitness);
         // u.print_individual(population->individual[i]);
     }
 }
@@ -64,7 +68,7 @@ void Problem::initialize_parents(int psize, Population *population){
 void Problem::initialize_population(int psize, Population *population){
     // Utils u;
     population->size = psize;
-    Estadistica::set_population_size(population->size);
+    this->estadistica->set_population_size(population->size);
     population->individual = (Individual*)malloc(sizeof(Individual)*population->size);
     population->individual->fitness = 0.0;
 
@@ -135,8 +139,8 @@ void Problem::evaluate_population(Population *population){
     for(int i=0; i<population->size; i++){
         if(population->individual[i].updated == 0){            
             evaluate(&(population->individual[i]));
-            Estadistica::increment_total_eval();
-            Estadistica::set_best_values(&population->individual[i], i);
+            this->estadistica->increment_total_eval();
+            this->estadistica->set_best_values(&population->individual[i], i);
         }
         set_best_individual(&(population->individual[i]));
         // u.print_individual_to_file (population->individual[i]);
