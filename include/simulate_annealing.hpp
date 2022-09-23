@@ -5,18 +5,21 @@
 #include <cstdlib>
 #include <cassert>
 #include <iostream>
+#include "problem.hpp"
 
 using namespace std;
 
-class SimulateAneadling
+class SimulateAnnealing
 {
 private:
-    int resultado_previo;
+    Utils u;
     // int m_last_res;
     double T0;
     double T_final;
     double time_step;
-    int epoch;
+    double alpha;
+    int op_unario;
+    float pmutatation;
 
 public:
     /**
@@ -26,29 +29,15 @@ public:
      * @param T_final
      * @param time_step
      */
-    SimulateAneadling(double T0, double T_minimo, double time_step);
+    SimulateAnnealing(string file);
 
-    //~SimulateAneadling();
-    int revertir_cambio();
+    //~SimulateAnnealing();
 
-    int hacer_cambios_y_calcuar_resultado();
+    double get_transicion_probabilidad(double E1, double E2, double T);
 
-    double get_transicion_probabilidad(int E1, int E2, double T);
+    double enfriamiento(int ID_THREAD, double T0, double T_actual, double time, int iter_actual);
 
-    double enfriamiento(double T0, double T_actual, int iter_actual);
-
-    /**
-     * @brief Aceptar la solución de acuerdo a la probabilidad
-     *
-     *
-     * @param E1
-     * @param E2
-     * @param T
-     * @return int
-     */
-    int cambio_con_probabilodad(int E1, int E2, double T);
-
-    void simulate();
+    void simulate(int, Population *, Problem *);
 };
 
 #endif

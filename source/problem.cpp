@@ -1,4 +1,9 @@
 #include "../include/problem.hpp"
+#include "../include/data.hpp"
+
+#define abss(a) (a < 0 ? (-a) : a)
+#define max(a, b) (a > b ? a : b)
+#define min(a, b) (a > b ? b : a)
 
 Problem::Problem(Estadistica &e){
     this->estadistica = &e;
@@ -11,13 +16,13 @@ void Problem::load(string filename){
     if(file.is_open()){
         cout << filename << endl;
         file >> jsize;
-        cout << "jsize: " << jsize << endl; //cantidad cromosomas = tamaño solucion = cantidad tareas
+        cout << "jsize: " << jsize << endl;
         file >> msize;
-        cout << "msize: " << msize << endl; //cantidad maquina
+        cout << "msize: " << msize << endl;
         file >> upperBound;
-        cout << "upperbound: " << upperBound << endl; //peor solucion encontrada hasta ahora (caso minimizacion)
+        cout << "upperbound: " << upperBound << endl;
         file >> lowerBound;
-        cout << "lowerbound: " << lowerBound << endl; //mejor solucion encontrada hasta ahora (caso minimizacion)
+        cout << "lowerbound: " << lowerBound << endl;
         jobsTimes= new int*[msize];
 
         this->estadistica->set_upper_bound(upperBound);
@@ -123,7 +128,7 @@ void Problem::evaluate(Individual *individual){
     		}
 		}
 	}
-	individual->fitness = tiempo[jsize -1][msize-1];
+	*(&individual->fitness) = tiempo[jsize -1][msize-1];
     individual->updated = 1;
 
     for(j=0; j<jsize; j++){
@@ -159,4 +164,30 @@ void Problem::set_best_individual(Individual *individual){
 
 Individual* Problem::get_best(){
     return best;
+}
+
+double Problem::Shifted_Sphere(int dim, double *x)
+{
+    int i;
+    double z;
+    double F = 0;
+    for (i = 0; i < dim; i++)
+    {
+        z = x[i] - sphere[i];
+        F += z * z;
+    }
+    return F + f_bias[0];
+}
+
+double Problem::Schwefel_Problem(int dim, double *x)
+{
+    int i;
+    double z;
+    double F = abss(x[0] - schwefel[0]);
+    for (i = 1; i < dim; i++)
+    {
+        z = x[i] - schwefel[i];
+        F = max(F, abss(z));
+    }
+    return F + f_bias[1];
 }

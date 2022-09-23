@@ -15,6 +15,9 @@
 
 #include <fstream>
 #include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
 #include "utils.hpp"
 #include "generator.hpp"
 #include "estadistica.hpp"
@@ -40,6 +43,8 @@ public:
     void evaluate_population(Population*);
     void set_best_individual(Individual*);
     Individual* get_best();
+    double Shifted_Sphere(int ,double *);
+    double Schwefel_Problem(int, double *);
 };
 
 #endif

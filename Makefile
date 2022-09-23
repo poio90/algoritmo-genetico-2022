@@ -9,7 +9,7 @@ INCLUDES = -I./include
 SRCS_DIR=source/
 SRCS = ./source/generator.cpp ./source/crossover.cpp ./source/problem.cpp ./source/mutator.cpp \
  ./source/config.cpp ./source/utils.cpp  ./source/selector.cpp ./source/replacer.cpp \
-./source/estadistica.cpp ./source/Servicio_inmigracion.cpp ./source/simulate_annealing.cpp
+./source/estadistica.cpp ./source/simulate_annealing.cpp ./source/ga.cpp ./source/Servicio_inmigracion.cpp
 # define the C object files
 #
 # This uses Suffix Replacement within a macro:
@@ -23,7 +23,7 @@ OBJ_DIR=obj/
 OBJS=$(addprefix $(OBJ_DIR),$(notdir $(SRCS:.cpp=.o )))
 #ARCHIVO MAIN
 MAIN_FILE = ./main.cpp
-# MAIN_FILE_SECUENCIAL = ./main_secuencial.cpp
+MAIN_FILE_SECUENCIAL = ./main_secuencial.cpp
 
 # define the executable file
 MAIN = main.exe

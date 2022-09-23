@@ -1,30 +1,26 @@
+#include "../include/config.hpp"
+#include "../include/mutator.hpp"
 #include "../include/simulate_annealing.hpp"
 
-SimulateAneadling::SimulateAneadling(double T0, double T_final, double time_step) : T0(T0), T_final(T_final), time_step(time_step), resultado_previo(99999)
+SimulateAnnealing::SimulateAnnealing(string file)
 {
+    Configuration cfg;
+    cfg.read_sa(file);
+    this->T0 = cfg.T0;
+    this->T_final = cfg.T_final;
+    this->time_step = cfg.time_step;
+    this->op_unario = cfg.mutation;
+    this->alpha = cfg.alpha;
+    this->pmutatation = cfg.pmutation;
 }
 
 //~SimulateAneadling();
-int SimulateAneadling::revertir_cambio()
+double SimulateAnnealing::get_transicion_probabilidad(double E1, double E2, double T)
 {
-    return resultado_previo;
-}
-
-int SimulateAneadling::hacer_cambios_y_calcuar_resultado()
-{
-    // return cambios;
-    // obtenemos vecinos aleatorios del estado actual
-}
-
-double SimulateAneadling::get_transicion_probabilidad(int E1, int E2, double T)
-{
-    // double r = exp((E1 - E2) / T);
-    // // cout << E1 << "----" << E2 << " = " << E1 - E2 << " p= " << r << endl;
-    // return r;
     return exp((E1 - E2) / T);
 }
 
-double SimulateAneadling::enfriamiento(double T0, double T_actual, int iter_actual)
+double SimulateAnnealing::enfriamiento(int ID_THREAD, double T0, double T_actual, double time, int iter_actual)
 {
     /**
      * @brief
@@ -36,83 +32,75 @@ double SimulateAneadling::enfriamiento(double T0, double T_actual, int iter_actu
      *      * k = nº iteración actual, alpha constante cercana a 1 (usualmente, alpha in [0.8, 0.99])
      *   * Criterio de Boltzmann: Tk = T0 / (1 + log(k))
      *   * Esquema de Cauchy: Tk = T0 / (1 + k)
-     *   * Para controlar el número de iteraciones (Cauchy modificado): Tk+1 = Tk / (1 + b*Tk)
+     *   * Para controlar el número de iteraciones (Cauchy modificado): Tk+1 = Tk / (1 + beta*Tk)
      *   * Para ejecutar exactamente M iteraciones --> beta = (To – Tf) / (M*To*Tf)
      *   * https://sci2s.ugr.es/sites/default/files/files/Teaching/GraduatesCourses/Metaheuristicas/Tema05-Metodos%20basados%20en%20trayectorias-18-19.pdf
      */
-    int n = 0; // Definir este n por el número de thread
     double r = T_actual;
-    switch (n)
+    int M = 40; // M iteraciones elegidas al azar, podría ser el valor de T0 inicial de la config
+    switch (ID_THREAD)
     {
+    // case 0:
+    //     Criterio de Boltzmann -> demasiado muy lenta
+    //     cout << "Criterio de Boltzmann" << endl;
+    //     r = T0 / (1 + log(iter_actual));
+    //     break;
     case 0:
-        // Criterio de Boltzmann:
-        r = T0 / (1 + log(iter_actual));
+        // definido por el usuario
+        r = T0 * pow(alpha, time);
         break;
     case 1:
         // Esquema de Cauchy
         r = T0 / (1 + iter_actual);
         break;
     case 2:
-        // Cauchy modificado
-        r = T_actual / (1 + ((T0 - T_final) / (iter_actual * T0 * T_final)) * T_actual);
+        // Cauchy modificado(hace exactamente el número M que se especifique)
+        r = T_actual / (1 + ((T0 - this->T_final) / (M * T0 * this->T_final)) * T_actual);
         break;
     default:
         // Descenso geométrico
-        r = T_actual * 0.99;
+        r = T_actual * alpha;
         break;
     }
     return r;
 }
 
-/**
- * @brief Aceptar la solución de acuerdo a la probabilidad
- *
- *
- * @param E1
- * @param E2
- * @param T
- * @return int
- */
-int SimulateAneadling::cambio_con_probabilodad(int E1, int E2, double T)
+void SimulateAnnealing::simulate(int ID_THREAD, Population *estado_actual, Problem *p)
 {
-    // Si la nueva solucion no es mejor, aceptarla con una probabilidad de e^(-costo/temp)
-    int E = E2;
-    if (E2 < E1)
-    {
-        double p = get_transicion_probabilidad(E1, E2, T); // probabilidad para aceptar solución
-        double v = (double)rand() / (RAND_MAX);            // Números aleatorios entre 0 y 1
-
-        if (p > 0 || p < 1)
-        {
-            cout << " v is " << v << " p is " << p << endl;
-            if (v >= p)
-            {
-                E = revertir_cambio();
-            }
-        }
-    }
-    return E;
-}
-
-void SimulateAneadling::simulate()
-{
+    Mutator m(ID_THREAD);
+    Population *estado_inicial = (Population *)malloc(sizeof(Population));
+    int i = 0;
     double time = 1.0;
-    double T = T0;
-    int resultado = 0;
+    double probabilidad, T = T0;
+    p->initialize_parents((int)estado_actual->size, estado_inicial);
+    this->u.copy_population(estado_actual, estado_inicial);
 
     while (T > T_final)
     {
-        for (int i = 0; i < epoch; i++)
-        {
-            // cout << time << endl;
-            resultado = hacer_cambios_y_calcuar_resultado();
-            if (resultado > resultado_previo)
-                resultado = cambio_con_probabilodad(resultado_previo, resultado, T);
+        m.mutate(this->pmutatation, estado_actual);
+        p->evaluate_population(estado_actual);
 
-            resultado_previo = resultado;
-            T = enfriamiento(T0, T, i);
-            time = time + time_step;
-            // cout << "\n";
+        for (int j = 0; j < estado_actual->size; j++)
+        {
+            if (estado_actual->individual[j].fitness < estado_inicial->individual[j].fitness)
+            {
+                this->u.copy_individual(&(estado_actual->individual[j]), &(estado_inicial->individual[j]));
+            }
+            else
+            {
+                probabilidad = get_transicion_probabilidad(estado_inicial->individual[j].fitness, estado_actual->individual[j].fitness, T);
+                if (probabilidad > 0 && probabilidad < 1)
+                {
+                    if (this->u.randd(0, 1) <= probabilidad)
+                    {
+                        this->u.copy_individual(&(estado_actual->individual[j]), &(estado_inicial->individual[j]));
+                    }
+                }
+            }
         }
+        i++;
+        T = enfriamiento(ID_THREAD, T0, T, time, i);
+        time = time + time_step;
     }
+    free(estado_inicial);
 };

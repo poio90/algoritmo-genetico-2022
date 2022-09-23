@@ -23,7 +23,7 @@ void Crossover::crossover(float pcrossover, Population *offprings){
     
         r = u.randd(0,1);
 
-        if(r<pcrossover){
+        if(r<pcrossover && i+1<offprings->size){
             int crosspoint1 = rand() % size;
             int crosspoint2 = rand() % size;            
             

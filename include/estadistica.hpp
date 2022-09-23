@@ -32,7 +32,6 @@
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
-#include <string>
 #include "utils.hpp"
 #include <chrono>
 
@@ -68,12 +67,11 @@ private:
     int total_eval;
     int best_eval;
 
-    string nombre_archivo;
-    
+    string nombreArchivo;
 public:
 
     Estadistica();
-
+    
     void set_avg_fit();
     void set_avg_init_fit();
     void set_best_init(double);

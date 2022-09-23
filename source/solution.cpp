@@ -1,4 +1,4 @@
-#include "../include/solution.hpp"
+#include "../include/individual.hpp"
 
 Solution::Solution(int _size){
     size = _size;
