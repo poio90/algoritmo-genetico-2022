@@ -113,7 +113,7 @@ void Estadistica::sumarize(int ID_HILO)
   ofstream info("DatosCSV/" + this->nombreArchivo, ios::app);
   gap();
   agap();
-  info << ID_HILO << ";" << population_size << ";" << total_i << ";" << total_eval << ";" << avg_fit << ";" << best_fit << ";" << best_time << ";" << _gap << ";" << _agap << ";" << get_time() << endl;
+  info <<ID_HILO<<","<< population_size << "," << total_i <<"," << total_eval << "," << avg_fit << "," << best_fit << "," << _gap << "," << _agap << "," << best_i << "," << (int)best_time << "," << (int)get_time() << endl;
   info.close();
 }
 
@@ -131,7 +131,7 @@ void Estadistica::header(int ID_HILO)
   {
     file.close();
     ofstream infops("DatosCSV/" + this->nombreArchivo, ios::app);
-    infops << "#ID;#population_size;#total_iteraciones;#total_evaluaciones;#average_fit;best_fit;best_time;gap;average gap;tiempo transcurrido" << endl;
+    infops << "#ID,#population_size,#total_iteraciones,#total_evaluaciones,#average_fit,best_fit,gap,average gap,#iteracion_mejor_solucion,#tiempo_mejor_solucion(ms),tiempo transcurrido (ms)" << endl;
     infops.close();
   }
 }
